@@ -3,26 +3,25 @@
 import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 
-async function getCareers(page = 1, sort = '-createdAt') {
+async function getApplicants(page = 1, sort = '-submittedAt') {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/careers?page=${page}&sort=${sort}`, { cache: 'no-store' });
-  if (!res.ok) throw new Error(`Failed to fetch careers: ${res.status}`);
+  if (!res.ok) throw new Error(`Failed to fetch applicants: ${res.status}`);
   return res.json();
 }
 
 export default function Careers() {
-  const [careers, setCareers] = useState([]);
+  const [applicants, setApplicants] = useState([]);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [sortOrder, setSortOrder] = useState('-createdAt');
-  const itemsPerPage = 10;
+  const [sortOrder, setSortOrder] = useState('-submittedAt');
 
   useEffect(() => {
     async function fetchData() {
       try {
-        const data = await getCareers(currentPage, sortOrder);
-        setCareers(data.careers);
-        setTotalPages(Math.ceil(data.total / itemsPerPage));
+        const data = await getApplicants(currentPage, sortOrder);
+        setApplicants(data.applicants);
+        setTotalPages(data.pagination.totalPages);
       } catch (err) {
         setError(err.message);
       }
@@ -37,7 +36,7 @@ export default function Careers() {
   };
 
   const handleSortChange = () => {
-    setSortOrder(sortOrder === 'createdAt' ? '-createdAt' : 'createdAt');
+    setSortOrder(sortOrder === 'submittedAt' ? '-submittedAt' : 'submittedAt');
     setCurrentPage(1); // Reset to first page when sorting changes
   };
 
@@ -52,49 +51,47 @@ export default function Careers() {
               onClick={handleSortChange}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
             >
-              Sort by Date {sortOrder === '-createdAt' ? '(Newest First)' : '(Oldest First)'}
+              Sort by Date {sortOrder === '-submittedAt' ? '(Newest First)' : '(Oldest First)'}
             </button>
           </div>
           {error ? (
             <p className="text-red-500">Error: {error}</p>
-          ) : careers.length === 0 ? (
-            <p className="text-gray-600">No data available</p>
+          ) : applicants.length === 0 ? (
+            <p className="text-gray-600">No applicants available</p>
           ) : (
             <div className="overflow-x-auto bg-white shadow-md rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
+                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Age</th>
+                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Experience (Years)</th>
                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Resume</th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Job ID</th>
                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted At</th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
-                  {careers.map((career, index) => (
+                  {applicants.map((applicant, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="py-4 px-6 text-sm text-gray-900">{career.name}</td>
-                      <td className="py-4 px-6 text-sm text-gray-900">{career.email}</td>
-                      <td className="py-4 px-6 text-sm text-gray-900">{career.phone}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{applicant.name}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{applicant.age}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{applicant.experience}</td>
                       <td className="py-4 px-6 text-sm">
-                        {career.resume ? (
+                        {applicant.resumeUrl ? (
                           <a
-                            href={career.resume}
+                            href={applicant.resumeUrl}
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-blue-600 hover:text-blue-800 underline"
                           >
-                            Download Resume
+                            View Resume
                           </a>
                         ) : 'N/A'}
                       </td>
-                      <td className="py-4 px-6 text-sm text-gray-900">{career.appliedPosition}</td>
-                      <td className="py-4 px-6 text-sm text-gray-900">{career.status}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{applicant.jobId}</td>
                       <td className="py-4 px-6 text-sm text-gray-900">
-                        {career.createdAt ? new Date(career.createdAt).toLocaleString() : 'N/A'}
+                        {applicant.submittedAt ? new Date(applicant.submittedAt).toLocaleString() : 'N/A'}
                       </td>
                     </tr>
                   ))}
