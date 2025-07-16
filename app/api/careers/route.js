@@ -39,15 +39,17 @@ export async function GET(request) {
     const jobId = searchParams.get('jobId');
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const sort = searchParams.get('sort') || '-submittedAt'; // Default to descending order
     const skip = (page - 1) * limit;
 
     // Build query
     const query = jobId ? { jobId } : {};
 
-    // Fetch applicants with pagination
+    // Fetch applicants with pagination and sorting
     const [applicants, total] = await Promise.all([
       Applicant.find(query)
         .select('name age experience resumeUrl jobId submittedAt')
+        .sort(sort) // Apply sorting based on the 'sort' parameter
         .skip(skip)
         .limit(limit)
         .lean(),

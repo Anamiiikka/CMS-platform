@@ -27,7 +27,7 @@ export default function Leads() {
       }
     }
     fetchData();
-  }, [currentPage, sortOrder]);
+  }, [currentPage, sortOrder]); // Re-run when sortOrder or currentPage changes
 
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
@@ -36,7 +36,8 @@ export default function Leads() {
   };
 
   const handleSortChange = () => {
-    setSortOrder(sortOrder === 'submittedAt' ? '-submittedAt' : 'submittedAt');
+    const newSortOrder = sortOrder === 'submittedAt' ? '-submittedAt' : 'submittedAt';
+    setSortOrder(newSortOrder);
     setCurrentPage(1); // Reset to first page when sorting changes
   };
 

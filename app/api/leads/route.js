@@ -77,11 +77,13 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
+    const sort = searchParams.get('sort') || '-submittedAt'; // Default to descending order
     const skip = (page - 1) * limit;
 
     const [leads, total] = await Promise.all([
       Lead.find()
         .select('firstName lastName email industry message submittedAt')
+        .sort(sort) // Apply sorting based on the 'sort' parameter
         .skip(skip)
         .limit(limit)
         .lean(),
