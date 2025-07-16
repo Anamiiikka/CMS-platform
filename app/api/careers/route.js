@@ -17,12 +17,21 @@ async function dbConnect() {
   }
 }
 
-export async function GET() {
+export async function GET(request) {
   try {
     await dbConnect();
-    const careers = await Career.find();
-    console.log('Query result:', careers);
-    return NextResponse.json(careers);
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page')) || 1;
+    const sort = searchParams.get('sort') || '-createdAt';
+    const limit = 10;
+
+    const careers = await Career.find()
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(limit);
+    const total = await Career.countDocuments();
+
+    return NextResponse.json({ careers, total });
   } catch (error) {
     console.error('Error in GET /api/careers:', {
       message: error.message,

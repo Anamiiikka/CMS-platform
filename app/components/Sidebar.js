@@ -1,10 +1,24 @@
 export default function Sidebar() {
   return (
-    <div className="fixed w-64 h-screen bg-gray-800 text-white p-4">
-      <h2 className="text-2xl font-bold mb-4">Menu</h2>
-      <ul>
-        <li className="mb-2"><a href="/careers" className="hover:text-gray-300">Careers</a></li>
-        <li className="mb-2"><a href="/leads" className="hover:text-gray-300">Leads</a></li>
+    <div className="fixed w-64 h-screen bg-white shadow-lg p-6">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">CMS Dashboard</h2>
+      <ul className="space-y-2">
+        <li>
+          <a
+            href="/careers"
+            className="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
+          >
+            Careers
+          </a>
+        </li>
+        <li>
+          <a
+            href="/leads"
+            className="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
+          >
+            Leads
+          </a>
+        </li>
       </ul>
     </div>
   );
