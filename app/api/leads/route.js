@@ -30,45 +30,6 @@ const leadSchema = new mongoose.Schema({
 
 const Lead = mongoose.models.Lead || mongoose.model('Lead', leadSchema);
 
-// POST handler
-export async function POST(request) {
-  try {
-    await connectToDatabase();
-
-    const { firstName, lastName, email, industry, message } = await request.json();
-
-    if (!firstName || !lastName || !email || !industry || !message) {
-      return NextResponse.json(
-        { error: 'All fields are required' },
-        { status: 400 }
-      );
-    }
-
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return NextResponse.json(
-        { error: 'Invalid email format' },
-        { status: 400 }
-      );
-    }
-
-    const lead = new Lead({ firstName, lastName, email, industry, message });
-    await lead.save();
-    console.log('Lead saved:', lead);
-
-    return NextResponse.json(
-      { message: 'Lead submitted successfully' },
-      { status: 200 }
-    );
-  } catch (error) {
-    console.error('Error processing lead:', error);
-    return NextResponse.json(
-      { error: 'Failed to process lead: ' + error.message },
-      { status: 500 }
-    );
-  }
-}
-
 // GET handler
 export async function GET(request) {
   try {
