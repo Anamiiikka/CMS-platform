@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react';
 import Sidebar from '../components/Sidebar';
 
 async function getLeads(page = 1, sort = '-submittedAt') {
-  const url = `${process.env.NEXT_PUBLIC_API_URL}/api/leads?page=${page}&sort=${sort}`;
-  console.log('Fetching URL:', url); // Debug the URL
-  const res = await fetch(url, { cache: 'no-store' });
+  const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads?page=${page}&sort=${sort}`, { cache: 'no-store' });
   if (!res.ok) throw new Error(`Failed to fetch leads: ${res.status}`);
   return res.json();
 }
@@ -17,14 +15,13 @@ export default function Leads() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [sortOrder, setSortOrder] = useState('-submittedAt');
-  const itemsPerPage = 10;
 
   useEffect(() => {
     async function fetchData() {
       try {
         const data = await getLeads(currentPage, sortOrder);
-        setLeads(data.leads);
-        setTotalPages(Math.ceil(data.total / itemsPerPage));
+        setLeads(data.leads || []);
+        setTotalPages(data.pagination?.totalPages || 1);
       } catch (err) {
         setError(err.message);
       }
@@ -49,7 +46,7 @@ export default function Leads() {
       <div className="ml-64 p-6 flex-1 bg-gray-100">
         <div className="max-w-7xl mx-auto">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-3xl font-bold text-gray-800">Leads</h2>
+            <h2 className="text-3xl font-bold text-gray-800">Lead Submissions</h2>
             <button
               onClick={handleSortChange}
               className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
@@ -60,14 +57,16 @@ export default function Leads() {
           {error ? (
             <p className="text-red-500">Error: {error}</p>
           ) : leads.length === 0 ? (
-            <p className="text-gray-600">No data available</p>
+            <p className="text-gray-600">No leads available</p>
           ) : (
             <div className="overflow-x-auto bg-white shadow-md rounded-lg">
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">First Name</th>
+                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last Name</th>
                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                    <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Industry</th>
                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Message</th>
                     <th className="py-3 px-6 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Submitted At</th>
                   </tr>
@@ -75,9 +74,11 @@ export default function Leads() {
                 <tbody className="bg-white divide-y divide-gray-200">
                   {leads.map((lead, index) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="py-4 px-6 text-sm text-gray-900">{lead.name || 'N/A'}</td>
-                      <td className="py-4 px-6 text-sm text-gray-900">{lead.email || 'N/A'}</td>
-                      <td className="py-4 px-6 text-sm text-gray-900">{lead.message || 'N/A'}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{lead.firstName}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{lead.lastName}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{lead.email}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{lead.industry}</td>
+                      <td className="py-4 px-6 text-sm text-gray-900">{lead.message}</td>
                       <td className="py-4 px-6 text-sm text-gray-900">
                         {lead.submittedAt ? new Date(lead.submittedAt).toLocaleString() : 'N/A'}
                       </td>
