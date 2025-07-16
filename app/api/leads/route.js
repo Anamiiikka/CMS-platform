@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import mongoose from 'mongoose';
-import Lead from '../../../models/Lead';
+import Lead from '@/app/models/Lead';
 
 export async function GET() {
   try {

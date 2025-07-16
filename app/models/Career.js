@@ -1,13 +1,13 @@
-import mongoose from 'mongoose';
+const mongoose = require('mongoose');
 
 const careerSchema = new mongoose.Schema({
-  _id: mongoose.Schema.Types.ObjectId,
   name: String,
-  age: Number,
-  experience: Number,
-  resumeUrl: String,
-  jobId: String,
-  submittedAt: Date
-}, { collection: 'applicants' });
+  email: String,
+  phone: String,
+  resume: String,
+  appliedPosition: String,
+  status: String,
+  createdAt: { type: Date, default: Date.now }
+});
 
-export default mongoose.models.Career || mongoose.model('Career', careerSchema);
+module.exports = mongoose.models.Career || mongoose.model('Career', careerSchema);
