@@ -1,3 +1,4 @@
+// components/Sidebar.js
 export default function Sidebar() {
   return (
     <div className="fixed w-64 h-screen bg-white shadow-lg p-6">
@@ -5,7 +6,7 @@ export default function Sidebar() {
       <ul className="space-y-2">
         <li>
           <a
-            href="/careers"
+            href="/cms/careers"
             className="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
           >
             Careers
@@ -13,7 +14,7 @@ export default function Sidebar() {
         </li>
         <li>
           <a
-            href="/leads"
+            href="/cms/leads"
             className="block py-2 px-4 text-gray-700 hover:bg-blue-50 hover:text-blue-600 rounded-md transition-colors"
           >
             Leads

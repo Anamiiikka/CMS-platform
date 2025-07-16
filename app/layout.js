@@ -1,9 +1,9 @@
-
+// app/layout.js
 import './globals.css';
 
 export const metadata = {
   title: 'CMS Platform',
-  description: 'Career and Leads Management System',
+  description: 'A simple CMS platform',
 };
 
 export default function RootLayout({ children }) {
