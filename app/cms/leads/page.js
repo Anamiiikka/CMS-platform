@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import * as XLSX from 'xlsx';
+import { saveAs } from 'file-saver';
 
 async function getLeads(page = 1, sort = '-submittedAt') {
   const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/leads?page=${page}&sort=${sort}`, {
@@ -42,17 +44,47 @@ export default function Leads() {
     setCurrentPage(1);
   };
 
+  const handleExportToExcel = () => {
+    // Format data for Excel
+    const dataToExport = leads.map(lead => ({
+      'First Name': lead.firstName,
+      'Last Name': lead.lastName,
+      Email: lead.email,
+      Industry: lead.industry,
+      Message: lead.message,
+      'Submitted At': lead.submittedAt ? new Date(lead.submittedAt).toLocaleString() : 'N/A',
+    }));
+
+    // Create worksheet and workbook
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, 'Leads');
+
+    // Generate Excel file and trigger download
+    const excelBuffer = XLSX.write(workbook, { bookType: 'xlsx', type: 'array' });
+    const blob = new Blob([excelBuffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, 'Leads.xlsx');
+  };
+
   return (
     <div className="p-6 flex-1 bg-gray-100">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-3xl font-bold text-gray-800">Lead Submissions</h2>
-          <button
-            onClick={handleSortChange}
-            className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
-          >
-            Sort by Date {sortOrder === '-submittedAt' ? '(Newest First)' : '(Oldest First)'}
-          </button>
+          <div className="space-x-2">
+            <button
+              onClick={handleSortChange}
+              className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors"
+            >
+              Sort by Date {sortOrder === '-submittedAt' ? '(Newest First)' : '(Oldest First)'}
+            </button>
+            <button
+              onClick={handleExportToExcel}
+              className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition-colors"
+            >
+              Export to Excel
+            </button>
+          </div>
         </div>
 
         {error ? (
